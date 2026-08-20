@@ -17,8 +17,6 @@ pluginManagement {
     }
 }
 
-include("libs")
-
 includeBuild("deps/Odin") {
     dependencySubstitution {
         substitute(module("com.odtheking:Odin")).using(project(":"))
