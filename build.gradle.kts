@@ -24,7 +24,7 @@ dependencies {
 
     runtimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
 
-    implementation(files("libs/odin-0.3.0.jar"))
+    implementation(files("libs/Odin-${property("odin_version")}.jar"))
 
     implementation(
         "com.github.stivais:Commodore:${property("commodore_version")}"
