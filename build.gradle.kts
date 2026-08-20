@@ -24,7 +24,9 @@ dependencies {
 
     runtimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
 
-    implementation(files("libs/Odin-${property("odin_version")}.jar"))
+    // Odin is required separately and must not be nested in the addon jar.
+    compileOnly(files("libs/Odin-${property("odin_version")}.jar"))
+    runtimeOnly(files("libs/Odin-${property("odin_version")}.jar"))
 
     implementation(
         "com.github.stivais:Commodore:${property("commodore_version")}"
