@@ -1,0 +1,4 @@
+[submodule "deps/Odin"]
+	path = deps/Odin
+	url = https://github.com/odtheking/Odin.git
+	branch = 26.2
