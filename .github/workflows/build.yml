@@ -1,33 +1,49 @@
-name: build
-on: [ pull_request, push ]
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+      - 26.1.2
+  pull_request:
+    branches:
+      - master
+      - 26.1.2
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: [ 21 ]
+
     steps:
-      - name: checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
-      - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: setup jdk ${{ matrix.java }}
-        uses: actions/setup-java@v3
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
         with:
-          distribution: 'corretto'
-          java-version: ${{ matrix.java }}
+          distribution: temurin
+          java-version: "25"
 
-      - name: make gradle wrapper executable
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - name: build
-        run: ./gradlew build
+      - name: Build
+        run: ./gradlew build --no-daemon
 
-      - name: capture build artifacts
+      - name: Determine artifact name
+        id: artifact
+        shell: bash
+        run: |
+          branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          echo "name=OdinAddon-${branch//\//-}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Artifacts
+          name: ${{ steps.artifact.outputs.name }}
           path: build/libs/
+          if-no-files-found: error
