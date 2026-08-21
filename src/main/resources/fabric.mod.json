@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "odinaddon",
+  "id": "autovesuvius",
   "version": "${version}",
-  "name": "OdinAddon",
+  "name": "AutoVesuvius",
   "description": "",
   "authors": [],
   "contact": {},
@@ -18,7 +18,7 @@
     ]
   },
   "mixins": [
-    "odinaddon.mixins.json"
+    "autovesuvius.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
