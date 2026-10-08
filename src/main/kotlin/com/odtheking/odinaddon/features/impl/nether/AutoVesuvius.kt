@@ -2,8 +2,8 @@ package com.odtheking.odinaddon.features.impl.nether
 
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
@@ -20,8 +20,8 @@ object AutoVesuvius : Module(
     name = "Auto Vesuvius",
     description = "Opens Kuudra Chests for you"
 ) {
-    private val delay by NumberSetting("Delay", 4, min = 1, max = 10, desc = "Delay", unit = "t")
-    private val minProfit by NumberSetting("Minimum profit", 200, min = 0, max = 1000, desc = "Minimum profit", unit = "k")
+    private val delay by NumberSetting("Delay", 4, 1..10, desc = "Delay", unit = "t")
+    private val minProfit by NumberSetting("Minimum profit", 200, 0..1000, desc = "Minimum profit", unit = "k")
     private val action by ActionSetting("Start", "") {
         active = true
     }
@@ -42,7 +42,7 @@ object AutoVesuvius : Module(
                 chestRegex.matches(title.string) -> { handleChest(containerId) }
             }
         }
-        on<ChatPacketEvent> {
+        on<MessageEvent.Chat> {
             if (!active) return@on
 
             if (component.string.contains("You cannot afford this!")) {
@@ -59,7 +59,7 @@ object AutoVesuvius : Module(
     }
     private fun handleChestScreen(id: Int) {
         schedule(delay, true) {
-            val sc = mc.screen as? AbstractContainerScreen<*> ?: return@schedule
+            val sc = mc.gui.screen() as? AbstractContainerScreen<*> ?: return@schedule
 
             if (id != sc.menu.containerId) {
                 modMessage("lock in twin")
@@ -83,7 +83,7 @@ object AutoVesuvius : Module(
     }
     private fun handleSelection(id: Int) {
         schedule(delay, true) {
-            val sc = mc.screen as? AbstractContainerScreen<*> ?: return@schedule
+            val sc = mc.gui.screen() as? AbstractContainerScreen<*> ?: return@schedule
 
             if (id != sc.menu.containerId) {
                 modMessage("lock in twin")
@@ -100,7 +100,7 @@ object AutoVesuvius : Module(
     }
     fun handleChest(id: Int) {
         schedule(delay, true) {
-            val sc = mc.screen as? AbstractContainerScreen<*> ?: return@schedule
+            val sc = mc.gui.screen() as? AbstractContainerScreen<*> ?: return@schedule
 
             if (id != sc.menu.containerId) {
                 modMessage("lock in twin")
@@ -112,7 +112,7 @@ object AutoVesuvius : Module(
     }
 
     fun cycleProfit(id: Int) {
-        val sc = mc.screen as? AbstractContainerScreen<*> ?: return
+        val sc = mc.gui.screen() as? AbstractContainerScreen<*> ?: return
 
         if (id != sc.menu.containerId) {
             modMessage("lock in twin")
@@ -122,7 +122,7 @@ object AutoVesuvius : Module(
         val profit = getProfit() ?: run {
             modMessage("Failed to get profit. Retrying in 1 second.")
             schedule(20, true) {
-                val sc1 = mc.screen as? AbstractContainerScreen<*> ?: return@schedule
+                val sc1 = mc.gui.screen() as? AbstractContainerScreen<*> ?: return@schedule
                 if (id == sc1.menu.containerId) cycleProfit(id)
             }
             return

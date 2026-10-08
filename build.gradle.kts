@@ -11,6 +11,7 @@ version = property("mod_version")!!
 
 repositories {
     mavenCentral()
+    google()
     maven("https://jitpack.io")
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 }
@@ -35,19 +36,18 @@ dependencies {
 
 loom {
     runConfigs.named("client") {
-        isIdeConfigGenerated = true
-        vmArgs.addAll(
-            arrayOf(
-                "-Dmixin.debug.export=true",
-                "-Ddevauth.enabled=true",
-                "-Ddevauth.account=main",
-                "-XX:+AllowEnhancedClassRedefinition"
-            )
+        generateRunConfig.set(true)
+        jvmArguments.addAll(
+            "-Dmixin.debug.export=true",
+            "-Ddevauth.enabled=true",
+            "-Ddevauth.account=main",
+            "-XX:+AllowEnhancedClassRedefinition",
+            "-XX:+IgnoreUnrecognizedVMOptions",
         )
     }
 
     runConfigs.named("server") {
-        isIdeConfigGenerated = false
+        generateRunConfig.set(false)
     }
 
     accessWidenerPath = file("src/main/resources/odinaddon.accesswidener")
@@ -55,7 +55,7 @@ loom {
 
 afterEvaluate {
     loom.runs.named("client") {
-        vmArg("-javaagent:${configurations.compileClasspath.get().find { it.name.contains("sponge-mixin") }}")
+        jvmArguments.add("-javaagent:${configurations.compileClasspath.get().find { it.name.contains("sponge-mixin") }}")
     }
 }
 
